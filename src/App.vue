@@ -2,8 +2,8 @@
 <!-- eslint-disable no-debugger -->
 <template>
   <div id="app">
-    <el-col :span="10"> <el-form label-width="90px">
-        <el-form-item label="生成数量">
+    <el-col :span="9"> <el-form label-width="130px">
+        <el-form-item label="生成数量(1-1000)">
           <el-input :maxlength="4" type="number" size="mini" style="width:120px" v-model="generTime"></el-input>
           <el-button size="mini" @click="generStarts">生成</el-button>
         </el-form-item>
@@ -42,7 +42,8 @@
                   <el-tag size="mini">{{ item.indNum + 1 }}</el-tag>
                 </el-form-item>
                 <el-form-item label="起手">
-                  {{ item.maj.join(" ") }}
+                  <maj-pics :majString="item.maj"></maj-pics>
+                  <!-- {{ item.maj.join(" ") }} -->
                 </el-form-item>
                 <el-form-item label="位置">
                   {{ item.position }}家
@@ -64,7 +65,8 @@
                   <el-tag size="mini">{{ item.indNum + 1 }}</el-tag>
                 </el-form-item>
                 <el-form-item label="起手">
-                  {{ item.maj.join(" ") }}
+                  <maj-pics :majString="item.maj"></maj-pics>
+                  <!-- {{ item.maj.join(" ") }} -->
                 </el-form-item>
                 <el-form-item label="位置">
                   {{ item.position }}家
@@ -98,7 +100,8 @@
 
                 </el-form-item>
                 <el-form-item label="起手">
-                  {{ item.maj.join(" ") }}
+                  <maj-pics :majString="item.maj"></maj-pics>
+                  <!-- {{ item.maj.join(" ") }} -->
                 </el-form-item>
                 <el-form-item label="位置">
                   {{ item.position }}家
@@ -113,7 +116,7 @@
 
         </el-form>
       </el-form></el-col>
-    <el-col :span="14">
+    <el-col :span="15">
       <div style="max-height:90vh;overflow:auto;" ref="mounts">
         <div v-for="(item, index) in starts" :id="index" :key="index"
           style="margin-bottom:20px;background-color:whitesmoke;font-size:18px;font-weight:bold">
@@ -124,28 +127,39 @@
               </el-tag>
             </el-form-item>
             <el-form-item label="东">
-              <span>{{ item.e.join(" ") }}</span>
+             <maj-pics :majString="item.e"></maj-pics>
+              <!-- <span>{{ item.e.join(" ") }}</span> -->
             </el-form-item>
             <el-form-item label="南">
-              <span>{{ item.s.join(" ") }}</span>
+              <maj-pics :majString="item.s"></maj-pics>
+              <!-- <span>{{ item.s.join(" ") }}</span> -->
             </el-form-item>
             <el-form-item label="西">
-              <span>{{ item.w.join(" ") }}</span>
+              <maj-pics :majString="item.w"></maj-pics>
+              <!-- <span>{{ item.w.join(" ") }}</span> -->
             </el-form-item>
             <el-form-item label="北">
-              <span>{{ item.n.join(" ") }}</span>
+              <maj-pics :majString="item.n"></maj-pics>
+              <!-- <span>{{ item.n.join(" ") }}</span> -->
             </el-form-item>
             <el-form-item label="dora指示牌">
-              <span>{{ item.dora }}</span>
+              <maj-pics :majString="item.dora"></maj-pics>
+              <!-- <span>{{ item.dora }}</span> -->
             </el-form-item>
             <el-form-item label="剩余牌山">
-              <span>{{ item.nextMount.join(" ") }}</span>
+              <div style="padding:0 140px">
+                <maj-pics :majString="item.nextMount1"></maj-pics>
+                <maj-pics :majString="item.nextMount2"></maj-pics>
+              </div>
+             
+              <!-- <span>{{ item.nextMount.join(" ") }}</span> -->
             </el-form-item>
           </el-form>
         </div>
       </div>
     </el-col>
-    <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop>
+
+
   </div>
 </template>
 
@@ -173,8 +187,24 @@ let newMajhash = {}
 for (let key in majHash) {
   newMajhash[majHash[key]] = key * 1
 }
+import majPics from "./components/majs.vue"
 export default {
-
+  name: "app",
+  components: { majPics },
+  watch:{
+    
+    generTime:{
+        handler(val) {
+         if(val>1000){
+          this.generTime=1000
+         }
+         if(val<0){
+          this.generTime=1
+         }
+        },
+        deep: true
+    },
+  },
   data() {
     return {
       majMount: [],
@@ -200,9 +230,6 @@ export default {
       },
       showLeft: false
     }
-  },
-  components: {
-
   },
   methods: {
     generStarts() {
@@ -233,8 +260,9 @@ export default {
         let w = nowMount.slice(14, 27)
         let s = nowMount.slice(27, 40)
         let n = nowMount.slice(40, 53)
-        let nextMount = nowMount.slice(53, 136)
-        let dora = nowMount[130]
+        let nextMount1 = nowMount.slice(53, 122)
+        let nextMount2 = nowMount.slice(122, 136)
+        let dora =nowMount.slice(130, 132)
 
         e = this.arr2maj(this.maj2arr(e).sort(function (a, b) { return a - b }))
         s = this.arr2maj(this.maj2arr(s).sort(function (a, b) { return a - b }))
@@ -245,7 +273,7 @@ export default {
         this.checkSyanten(w, "w", i)
         this.checkSyanten(n, "n", i)
         this.starts.push({
-          e: e, w: w, s: s, n: n, nextMount: nextMount, dora: dora
+          e: e, w: w, s: s, n: n, nextMount1: nextMount1,nextMount2: nextMount2, dora: dora
         })
       }
       this.showLeft = true
@@ -281,7 +309,7 @@ export default {
         majMount = majMount.concat(['1z', '2z', '3z', '4z', '5z', '6z', '7z'])
       }
       majMount = majMount.concat(['0s', '0m', '0p', '5s', '5s', '5s', '5m', '5m', '5m', '5p', '5p', '5p'])
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 13; i++) {
         majMount = this.shuffle(majMount)
       }
       return majMount
@@ -410,12 +438,12 @@ export default {
     }
   },
   mounted() {
-
+    console.log(majPics);
   }
 }
 </script>
 
-<style>
+<style scoped>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
