@@ -2,12 +2,12 @@
 <!-- eslint-disable no-debugger -->
 <template>
   <div id="app">
-    <el-col :span="9"> <el-form label-width="130px">
+    <el-col :span="9"> <el-form label-width="85px">
         <el-form-item label="生成数量(1-1000)">
-          <el-input :maxlength="4" type="number" size="mini" style="width:120px" v-model="generTime"></el-input>
+          <el-input :maxlength="4" type="number" size="mini" style="width:40px" v-model="generTime"></el-input>
           <el-button size="mini" @click="generStarts">生成</el-button>
         </el-form-item>
-        <el-form v-if="showLeft" style="max-height:80vh;overflow:auto;" label-width="120px">
+        <el-form v-if="showLeft" style="max-height:80vh;overflow:auto;" label-width="85px">
           <el-form-item label="平均向听数">
             <span>{{ (shants.shantAver / (generTime * 4)).toFixed(3) }}</span>
           </el-form-item>
@@ -120,7 +120,7 @@
       <div style="max-height:90vh;overflow:auto;" ref="mounts">
         <div v-for="(item, index) in starts" :id="index" :key="index"
           style="margin-bottom:20px;background-color:whitesmoke;font-size:18px;font-weight:bold">
-          <el-form label-width="130px">
+          <el-form label-width="60px">
             <el-form-item label="序号">
               <el-tag size="mini">
                 {{ index+ 1 }}
@@ -147,7 +147,7 @@
               <!-- <span>{{ item.dora }}</span> -->
             </el-form-item>
             <el-form-item label="剩余牌山">
-              <div style="padding:0 140px">
+              <div style="padding:0 10px">
                 <maj-pics :majString="item.nextMount1"></maj-pics>
                 <maj-pics :majString="item.nextMount2"></maj-pics>
               </div>
@@ -455,7 +455,7 @@ export default {
 }
 
 .moutback {
-  padding: 10px;
+  padding-left: 2px;
   margin: 0 10px 10px 0;
   background-color: whitesmoke;
   cursor: pointer;
