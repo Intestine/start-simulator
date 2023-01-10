@@ -2,163 +2,207 @@
 <!-- eslint-disable no-debugger -->
 <template>
   <div id="app">
-    <el-col :span="9"> <el-form label-width="85px">
-        <el-form-item label="生成数量(1-1000)">
-          <el-input :maxlength="4" type="number" size="mini" style="width:40px" v-model="generTime"></el-input>
-          <el-button size="mini" @click="generStarts">生成</el-button>
-        </el-form-item>
-        <el-form v-if="showLeft" style="max-height:80vh;overflow:auto;" label-width="85px">
+    <!-- <el-col :span="9"> -->
+
+    <el-form label-width="150px">
+      <h2 @click="toInfo" style="margin:0 0 10px 0">发牌姬模拟器</h2>
+      <el-form-item label="生成数量(1-1000)">
+        <el-input :maxlength="4" type="number" size="mini" style="width:80px" v-model="generTime"></el-input>
+        <el-button size="mini" type="error" @click="generStarts">点击发牌</el-button>
+      </el-form-item>
+      <el-form v-if="showLeft" style="max-height:40vh;overflow:auto;" label-width="120px">
+        <el-form inline>
           <el-form-item label="平均向听数">
             <span>{{ (shants.shantAver / (generTime * 4)).toFixed(3) }}</span>
           </el-form-item>
-          <el-form-item label="平均亲家向听数">
-            <span>{{ (shants.shantAverE / generTime).toFixed(3) }}</span>
+          <el-form-item label="平均亲家/子家向听数">
+            <span>{{ (shants.shantAverE / generTime).toFixed(3) }}</span>/<span>{{(shants.shantAverOther / (generTime *
+            3)).toFixed(3)}}</span>
           </el-form-item>
-          <el-form-item label="平均闲家向听数">
-            <span>{{(shants.shantAverOther / (generTime * 3)).toFixed(3)}}</span>
-          </el-form-item>
-          <el-form-item v-if="shants.tenhu" label="天胡">
-            <span>{{ shants.tenhu }}</span>
-            <div @click="toMount(item)" v-for="item in shants.tenhuStarts" :key="item">
-              <el-form label-width="40px">
-                <el-form-item label="序号">
-                  <el-tag size="mini">{{ item.indNum + 1 }}</el-tag>
-                </el-form-item>
-                <el-form-item label="起手">
-                  {{ item.maj.join(" ") }}
-                </el-form-item>
-                <!-- <el-form-item label="剩余牌山">
+        </el-form>
+
+        <el-form-item v-if="shants.tenhu" label="天胡">
+          <span>{{ shants.tenhu }}</span>
+
+        </el-form-item>
+        <div v-if="shants.tenhu">
+          <div @click="toMount(item)" v-for="item in shants.tenhuStarts" :key="item">
+            <el-form label-width="40px">
+              <el-form-item label="序号">
+                <el-tag size="mini">{{ item.indNum + 1 }}</el-tag>
+              </el-form-item>
+              <el-form-item label="起手">
+                {{ item.maj.join(" ") }}
+              </el-form-item>
+              <!-- <el-form-item label="剩余牌山">
                   {{ item.nextMount }}
                 </el-form-item> -->
-              </el-form>
+            </el-form>
 
-            </div>
-          </el-form-item>
-          <el-form-item v-if="shants.shant0" label="0向听数">
-            <span>{{ shants.shant0 }}</span>
-            <div class="moutback" @click="toMount(item)" v-for="item in shants.shant0starts" :key="item">
-              <el-form label-width="40px">
+          </div>
+        </div>
+        <el-form-item v-if="shants.shant0" label="零向听数">
+          <span>{{ shants.shant0 }}</span>
+        </el-form-item>
+        <div v-if="shants.shant0">
+          <div class="moutback" @click="toMount(item)" v-for="item in shants.shant0starts" :key="item">
+            <el-form label-width="40px">
+              <el-form inline>
                 <el-form-item label="序号">
                   <el-tag size="mini">{{ item.indNum + 1 }}</el-tag>
                 </el-form-item>
-                <el-form-item label="起手">
-                  <maj-pics :majString="item.maj"></maj-pics>
-                  <!-- {{ item.maj.join(" ") }} -->
-                </el-form-item>
-                <el-form-item label="位置">
+                <el-form-item label="">
                   {{ item.position }}家
                 </el-form-item>
-                <!-- <el-form-item label="剩余牌山">
-                  {{ item.nextMount }}
-                </el-form-item> -->
-
               </el-form>
+              <el-form-item label="起手">
+                <maj-pics :majString="item.maj"></maj-pics>
+              </el-form-item>
+            </el-form>
+          </div>
+        </div>
+        <el-form-item v-if="shants.shant1" label="一向听数">
+          <span>{{ shants.shant1 }}</span>
 
-            </div>
-          </el-form-item>
-          <el-form-item v-if="shants.shant1" label="1向听数">
-            <span>{{ shants.shant1 }}</span>
-
-            <div @click="toMount(item)" class="moutback" v-for="(item, index) in shants.shant1starts" :key="index">
-              <el-form label-width="40px">
+        </el-form-item>
+        <div v-if="shants.shant1">
+          <div @click="toMount(item)" class="moutback" v-for="(item, index) in shants.shant1starts" :key="index">
+            <el-form>
+              <el-form inline>
                 <el-form-item label="序号">
                   <el-tag size="mini">{{ item.indNum + 1 }}</el-tag>
                 </el-form-item>
-                <el-form-item label="起手">
-                  <maj-pics :majString="item.maj"></maj-pics>
-                  <!-- {{ item.maj.join(" ") }} -->
-                </el-form-item>
-                <el-form-item label="位置">
+                <el-form-item label="">
                   {{ item.position }}家
                 </el-form-item>
-
-                <!-- <el-form-item label="剩余牌山">
-                  {{ item.nextMount }}
-                </el-form-item> -->
               </el-form>
+              <el-form-item label="起手">
+                <maj-pics :majString="item.maj"></maj-pics>
+              </el-form-item>
+            </el-form>
 
-            </div>
-          </el-form-item>
-          <el-form-item v-if="shants.shant2" label="2向听数">
+          </div>
+        </div>
+        <el-form inline>
+          <el-form-item v-if="shants.shant2" label="两向听数">
             <span>{{ shants.shant2 }}</span>
           </el-form-item>
-          <el-form-item v-if="shants.shant3" label="3向听数">
+          <el-form-item v-if="shants.shant3" label="三向听数">
             <span>{{ shants.shant3 }}</span>
           </el-form-item>
-          <el-form-item v-if="shants.shant4" label="4向听数">
+          <el-form-item v-if="shants.shant4" label="四向听数">
             <span>{{ shants.shant4 }}</span>
           </el-form-item>
-          <el-form-item v-if="shants.shant5" label="5向听数">
+          <el-form-item v-if="shants.shant5" label="五向听数">
             <span>{{ shants.shant5 }}</span>
           </el-form-item>
-          <el-form-item v-if="shants.shant6" label="6向听数">
-            <span>{{ shants.shant6 }}</span>
-            <div @click="toMount(item)" class="moutback" v-for="(item, index) in shants.shant6starts" :key="index">
-              <el-form label-width="40px">
+        </el-form>
+
+        <el-form-item v-if="shants.shant6" label="六向听数">
+          <span>{{ shants.shant6 }}</span>
+
+        </el-form-item>
+        <div v-if="shants.shant6">
+          <div @click="toMount(item)" class="moutback" v-for="(item, index) in shants.shant6starts" :key="index">
+            <el-form label-width="40px">
+              <el-form inline>
                 <el-form-item label="序号">
                   <el-tag size="mini">{{ item.indNum + 1 }}</el-tag>
-
                 </el-form-item>
-                <el-form-item label="起手">
-                  <maj-pics :majString="item.maj"></maj-pics>
-                  <!-- {{ item.maj.join(" ") }} -->
-                </el-form-item>
-                <el-form-item label="位置">
+                <el-form-item label="">
                   {{ item.position }}家
                 </el-form-item>
-                <!-- <el-form-item label="剩余牌山">
-                  {{ item.nextMount }}
-                </el-form-item> -->
               </el-form>
+              <el-form-item label="起手">
+                <maj-pics :majString="item.maj"></maj-pics>
+              </el-form-item>
 
-            </div>
-          </el-form-item>
+            </el-form>
+          </div>
+        </div>
 
-        </el-form>
-      </el-form></el-col>
-    <el-col :span="15">
-      <div style="max-height:90vh;overflow:auto;" ref="mounts">
-        <div v-for="(item, index) in starts" :id="index" :key="index"
-          style="margin-bottom:20px;background-color:whitesmoke;font-size:18px;font-weight:bold">
-          <el-form label-width="60px">
+        <el-form-item v-if="shants.shant99" label="九种九牌">
+          <span>{{ shants.shant99 }}</span>
+
+        </el-form-item>
+        <div v-if="shants.shant99">
+          <div @click="toMount(item)" class="moutback" v-for="(item, index) in shants.shant99starts" :key="index">
+            <el-form label-width="40px">
+              <el-form inline>
+                <el-form-item label="序号">
+                  <el-tag size="mini">{{ item.indNum + 1 }}</el-tag>
+                </el-form-item>
+                <el-form-item label="">
+                  {{ item.position }}家
+                </el-form-item>
+              </el-form>
+              <el-form-item label="起手">
+                <maj-pics :majString="item.maj"></maj-pics>
+              </el-form-item>
+
+            </el-form>
+          </div>
+        </div>
+      </el-form>
+    </el-form>
+    <!-- </el-col> -->
+    <!-- <el-col :span="15"> -->
+    <div style="max-height:52vh;overflow:auto;" ref="mounts">
+      <div v-for="(item, index) in starts" :id="index" :key="index"
+        style="margin-bottom:20px;background-color:whitesmoke;font-size:18px;font-weight:bold;padding-left:3px;">
+        <el-form label-width="40px">
+          <el-form inline>
             <el-form-item label="序号">
               <el-tag size="mini">
                 {{ index+ 1 }}
               </el-tag>
-            </el-form-item>
-            <el-form-item label="东">
-             <maj-pics :majString="item.e"></maj-pics>
-              <!-- <span>{{ item.e.join(" ") }}</span> -->
-            </el-form-item>
-            <el-form-item label="南">
-              <maj-pics :majString="item.s"></maj-pics>
-              <!-- <span>{{ item.s.join(" ") }}</span> -->
-            </el-form-item>
-            <el-form-item label="西">
-              <maj-pics :majString="item.w"></maj-pics>
-              <!-- <span>{{ item.w.join(" ") }}</span> -->
-            </el-form-item>
-            <el-form-item label="北">
-              <maj-pics :majString="item.n"></maj-pics>
-              <!-- <span>{{ item.n.join(" ") }}</span> -->
+
             </el-form-item>
             <el-form-item label="dora指示牌">
               <maj-pics :majString="item.dora"></maj-pics>
               <!-- <span>{{ item.dora }}</span> -->
             </el-form-item>
-            <el-form-item label="剩余牌山">
-              <div style="padding:0 10px">
-                <maj-pics :majString="item.nextMount1"></maj-pics>
-                <maj-pics :majString="item.nextMount2"></maj-pics>
-              </div>
-             
-              <!-- <span>{{ item.nextMount.join(" ") }}</span> -->
-            </el-form-item>
           </el-form>
-        </div>
-      </div>
-    </el-col>
 
+          <el-form-item label="东">
+            <maj-pics :majString="item.e"></maj-pics>
+            <!-- <span>{{ item.e.join(" ") }}</span> -->
+          </el-form-item>
+          <el-form-item label="南">
+            <maj-pics :majString="item.s"></maj-pics>
+            <!-- <span>{{ item.s.join(" ") }}</span> -->
+          </el-form-item>
+          <el-form-item label="西">
+            <maj-pics :majString="item.w"></maj-pics>
+            <!-- <span>{{ item.w.join(" ") }}</span> -->
+          </el-form-item>
+          <el-form-item label="北">
+            <maj-pics :majString="item.n"></maj-pics>
+            <!-- <span>{{ item.n.join(" ") }}</span> -->
+          </el-form-item>
+
+          <el-form-item label="剩余牌山">
+            <div style="padding:0 10px">
+              <maj-pics :majString="item.nextMount1"></maj-pics>
+              <maj-pics :majString="item.nextMount2"></maj-pics>
+            </div>
+
+            <!-- <span>{{ item.nextMount.join(" ") }}</span> -->
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+    <!-- </el-col> -->
+    <el-dialog :visible.sync="diaVisi" width="90%" title="发牌姬模拟器">
+      <el-form label-width="120px">
+        <el-form-item label="源代码(Github)">
+          <el-button type="text" @click="openGit">点击前往</el-button>
+          <!-- <span> <a href="https://github.com/Intestine/start-simulator.git">
+            https://github.com/Intestine/start-simulator.git
+          </a></span> -->
+        </el-form-item>
+      </el-form>
+    </el-dialog>
 
   </div>
 </template>
@@ -191,22 +235,23 @@ import majPics from "./components/majs.vue"
 export default {
   name: "app",
   components: { majPics },
-  watch:{
-    
-    generTime:{
-        handler(val) {
-         if(val>1000){
-          this.generTime=1000
-         }
-         if(val<0){
-          this.generTime=1
-         }
-        },
-        deep: true
+  watch: {
+
+    generTime: {
+      handler(val) {
+        if (val > 1000) {
+          this.generTime = 1000
+        }
+        if (val < 0) {
+          this.generTime = 1
+        }
+      },
+      deep: true
     },
   },
   data() {
     return {
+      diaVisi:false,
       majMount: [],
       generTime: 1,
       starts: [],
@@ -226,12 +271,20 @@ export default {
         shantAver: 0,
         shantAverE: 0,
         shantAverOther: 0,
-        shant6starts: []
+        shant6starts: [],
+        shant99starts:[],
+        shant99:0
       },
       showLeft: false
     }
   },
   methods: {
+    toInfo() { 
+      this.diaVisi = true
+    },
+    openGit(){
+      window.open("https://github.com/Intestine/start-simulator.git")
+    },
     generStarts() {
       this.showLeft = false
       this.starts = []
@@ -251,7 +304,9 @@ export default {
         shantAver: 0,
         shantAverE: 0,
         shantAverOther: 0,
-        shant6starts: []
+        shant6starts: [],
+        shant99starts:[],
+        shant99:0
       }
       for (let i = 0; i < this.generTime; i++) {
         let nowMount = this.generMajo()
@@ -262,7 +317,7 @@ export default {
         let n = nowMount.slice(40, 53)
         let nextMount1 = nowMount.slice(53, 122)
         let nextMount2 = nowMount.slice(122, 136)
-        let dora =nowMount.slice(130, 132)
+        let dora = nowMount.slice(130, 132)
 
         e = this.arr2maj(this.maj2arr(e).sort(function (a, b) { return a - b }))
         s = this.arr2maj(this.maj2arr(s).sort(function (a, b) { return a - b }))
@@ -273,7 +328,7 @@ export default {
         this.checkSyanten(w, "w", i)
         this.checkSyanten(n, "n", i)
         this.starts.push({
-          e: e, w: w, s: s, n: n, nextMount1: nextMount1,nextMount2: nextMount2, dora: dora
+          e: e, w: w, s: s, n: n, nextMount1: nextMount1, nextMount2: nextMount2, dora: dora
         })
       }
       this.showLeft = true
@@ -431,6 +486,10 @@ export default {
         }
         this.shants.shant6starts.push({ maj: arr, position: posi[position], indNum: index, })
       }
+      if (shayt.syanten13 <= 3) {
+        this.shants.shant99++
+        this.shants.shant99starts.push({ maj: arr, position: posi[position], indNum: index, })
+      }
       // return shayt
     },
     toMount(item) {
@@ -443,15 +502,23 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 10px;
 
+  span {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  ::v-deep .el-form-item {
+    margin-bottom: 10px;
+  }
 }
 
 .moutback {
